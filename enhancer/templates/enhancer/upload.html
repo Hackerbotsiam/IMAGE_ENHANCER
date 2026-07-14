@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Enhancer</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            margin: 0;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+        p.subtitle {
+            color: #94a3b8;
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 24px;
+            border: 1px solid #334155;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            color: #cbd5e1;
+        }
+        .field { margin-bottom: 18px; }
+        input[type="file"], select {
+            width: 100%;
+            padding: 10px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #e2e8f0;
+        }
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        button:hover { background: #4f46e5; }
+        .result img {
+            max-width: 100%;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            margin: 16px 0;
+        }
+        .meta {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+        .download-btn {
+            display: inline-block;
+            background: #16a34a;
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        .download-btn:hover { background: #15803d; }
+        .errorlist { color: #f87171; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖼️ Image Enhancer</h1>
+        <p class="subtitle">Upload a low-quality image, upscale + sharpen it, and download the high-resolution version.</p>
+
+        <div class="card">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="field">
+                    {{ form.image.label_tag }}
+                    {{ form.image }}
+                    {{ form.image.errors }}
+                </div>
+                <div class="field">
+                    {{ form.scale.label_tag }}
+                    {{ form.scale }}
+                </div>
+                <div class="field">
+                    {{ form.sharpen.label_tag }}
+                    {{ form.sharpen }}
+                </div>
+                <button type="submit">Enhance your image</button>
+            </form>
+        </div>
+
+        {% if result %}
+        <div class="card result">
+            <h2>Result</h2>
+            <p class="meta">
+                Original size: {{ result.original_size.0 }}×{{ result.original_size.1 }}px
+                &rarr; New size: {{ result.new_size.0 }}×{{ result.new_size.1 }}px
+            </p>
+            <img src="{{ result.processed_url }}" alt="Enhanced image preview">
+            <br>
+            <a class="download-btn" href="{% url 'enhancer:download' result.download_name %}">⬇ Download Enhanced Image</a>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
